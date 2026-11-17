@@ -1,0 +1,1 @@
+{"root":["./src/App.tsx","./src/main.tsx","./src/components/Field.tsx","./src/components/NumberInput.tsx","./src/components/ResultCard.tsx","./src/lib/mmr.test.ts","./src/lib/mmr.ts","./src/lib/ranks.ts","./vite.config.ts"],"version":"5.9.3"}
