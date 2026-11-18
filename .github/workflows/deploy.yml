@@ -1,8 +1,7 @@
-name: Deploy no GitHub Pages
+name: CI e deploy no GitHub Pages
 
 on:
   push:
-    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -15,7 +14,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build:
+  # Roda em qualquer branch: garante que testes e build nunca quebrem.
+  ci:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -26,22 +26,33 @@ jobs:
       - run: npm ci
       - run: npm test
       - run: npm run build
-        env:
-          GITHUB_PAGES: 'true'
-      - uses: actions/configure-pages@v5
-        with:
-          # Habilita o GitHub Pages automaticamente caso ainda não esteja ligado.
-          enablement: true
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: dist
 
+  # Publica só a partir da branch padrão do repositório (seja qual for o nome)
+  # ou quando o workflow é disparado à mão.
   deploy:
-    needs: build
+    needs: ci
+    if: >-
+      github.ref_name == github.event.repository.default_branch ||
+      github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+        env:
+          GITHUB_PAGES: 'true'
+      # Exige Pages já habilitado em Settings -> Pages -> Source: GitHub Actions.
+      # O GITHUB_TOKEN não tem permissão para criar o site sozinho.
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
       - id: deployment
         uses: actions/deploy-pages@v4
