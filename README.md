@@ -31,8 +31,9 @@ npm run build    # build de produção em dist/
 
 ## Deploy
 
-- **GitHub Pages**: já existe o workflow em `.github/workflows/deploy.yml`. Basta habilitar Pages
-  em *Settings → Pages → Source: GitHub Actions*. O app fica em
+- **GitHub Pages**: o workflow em `.github/workflows/deploy.yml` roda a cada push na `main` (ou via
+  *Run workflow*) e habilita o Pages sozinho (`enablement: true`). Se o repositório for privado,
+  Pages exige plano pago — nesse caso, deixe o repo público ou use Vercel. O app fica em
   `https://<usuario>.github.io/MMR-Calculator/`.
 - **Vercel / Netlify / Cloudflare Pages**: build `npm run build`, pasta `dist`. Nada mais.
 
